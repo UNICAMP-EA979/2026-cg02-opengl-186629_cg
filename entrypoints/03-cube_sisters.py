@@ -20,7 +20,27 @@ if __name__ == "__main__":
     ## SEU CÓDIGO AQUI ######################################################
     # Crie 2 cubos, ambos com mesmo material e textura "textures/baboon.png",
     # em posições diferentes
-
+    # Raciocínio: Demonstramos reutilização de dados. Os dois cubos compartilham
+    # a mesma mesh, shader e textura, mas têm transformações diferentes.
+    # Isso é eficiente em termos de memória e processamento.
+    
+    texture = urenderer.renderer.opengl.Texture.load_file("textures/baboon.png", drop_alpha=True)
+    material.set_texture(0, "texture0", texture)
+    
+    cube1 = urenderer.node.Node()
+    cube1.translation = np.array([-2, 0, -5], np.float64)
+    cube1.rotation = np.array([45, 45, 45], np.float64)
+    cube1.render_data["mesh"] = urenderer.geometry.mesh.get_mesh_cube()
+    cube1.render_data["material"] = material
+    
+    cube2 = urenderer.node.Node()
+    cube2.translation = np.array([2, 0, -5], np.float64)
+    cube2.rotation = np.array([45, 45, 45], np.float64)
+    cube2.render_data["mesh"] = urenderer.geometry.mesh.get_mesh_cube()
+    cube2.render_data["material"] = material
+    
+    runtime.scene.add_child(cube1)
+    runtime.scene.add_child(cube2)
     #########################################################################
 
     runtime.iter(capture=True)
@@ -34,7 +54,14 @@ if __name__ == "__main__":
     ## SEU CÓDIGO AQUI ######################################################
     # Crie um novo material com a textura "textures/monalisa.png" e utilize-o
     # no segundo cubo. Utilize o mesmo shader do primeiro material
-
+    # Raciocínio: Podemos criar múltiplos materiais com o mesmo shader mas
+    # texturas diferentes. Basta criar um novo Material e associar outra textura.
+    
+    texture2 = urenderer.renderer.opengl.Texture.load_file("textures/monalisa.png", drop_alpha=True)
+    material2 = urenderer.renderer.opengl.Material(shader)
+    material2.set_texture(0, "texture0", texture2)
+    
+    cube2.render_data["material"] = material2
     #########################################################################
 
     runtime.iter(capture=True)

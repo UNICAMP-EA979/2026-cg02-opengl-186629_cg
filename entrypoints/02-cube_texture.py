@@ -31,7 +31,10 @@ if __name__ == "__main__":
     # associada à variável texture0
     #
     # Utilize urenderer.renderer.opengl.Texture.load_file e material.set_texture
-
+    # Raciocínio: Texture.load_file carrega a imagem do arquivo e a prepara para uso em OpenGL.
+    # material.set_texture associa a textura a uma unidade e passa o nome da uniform para o shader.
+    texture = urenderer.renderer.opengl.Texture.load_file("textures/baboon.png", drop_alpha=True)
+    material.set_texture(0, "texture0", texture)
     #########################################################################
 
     cube = urenderer.node.Node()

@@ -22,7 +22,17 @@ if __name__ == "__main__":
 
     ## SEU CÓDIGO AQUI ######################################################
     # Defina as cores dos vértices
-
+    # Raciocínio: Cada vértice tem uma cor que será interpolada nos fragmentos
+    # entre ele e outros vértices. Criamos cores RGB diferentes para cada vértice.
+    # O shader vai interpolar essas cores linearmente (smooth shading).
+    
+    colors = np.array([
+        1.0, 0.0, 0.0,      # red (top)
+        0.0, 1.0, 0.0,      # green (bottom left)
+        0.0, 0.0, 1.0       # blue (bottom right)
+    ], dtype=np.float32)
+    
+    node.render_data["mesh"].color = colors
     #########################################################################
 
     runtime.scene.add_child(node)
