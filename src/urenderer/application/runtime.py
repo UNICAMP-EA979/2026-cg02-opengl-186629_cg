@@ -75,10 +75,16 @@ class Runtime:
 
             # Traverse the node children
             for child in node.children:
-                ## SEU CÓDIGO AQUI #####################################################
-                # Crie a transformação do nó filho, concatenando com as transformações anteriores
-
-                #########################################################################
+                """
+                Raciocínio:
+                    A transformação acumulada do filho é a transformação corrente do
+                    pai concatenada com a transformação local do filho:
+                        child_transformation = transformation @ child.model_transform
+                    Isso aplica primeiro a transformação local do filho, e em seguida
+                    a transformação dos antecessores (parent -> world).
+                """
+                # Create child transformation by concatenating parent and local
+                child_transformation = transformation @ child.model_transform
 
                 # Add child to the processing queue
                 nodes.append((child, child_transformation))
