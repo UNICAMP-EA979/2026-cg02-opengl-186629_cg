@@ -10,7 +10,10 @@ def update_cube(node: Node, deltaTime: float, time_since_start: float) -> None:
 
     ## SEU CÓDIGO AQUI ######################################################
     # Defina a uniform "time" do material como time_since_start
-
+    # Raciocínio: O shader usa o tempo para criar cores que mudam animadamente.
+    # Passamos o tempo como uniform para cada cubo, permitindo que cada um
+    # tenha sua própria progressão de tempo baseada no tempo total da aplicação.
+    material.set_uniform("time", time_since_start)
     #########################################################################
 
     time_since_start /= 10
@@ -34,7 +37,34 @@ if __name__ == "__main__":
 
     ## SEU CÓDIGO AQUI ######################################################
     # Crie vários cubos em posições e escalas aleatórias
-
+    # Raciocínio: Criamos múltiplos cubos em diferentes posições e escalas,
+    # todos compartilhando o mesmo material (shader). Cada um terá seu próprio
+    # callback de update que passa o tempo para o shader, criando um efeito
+    # de cores animadas e diferentes para cada cubo.
+    
+    np.random.seed(42)
+    for i in range(20):
+        cube = urenderer.node.Node()
+        
+        # Posição aleatória em torno da câmera
+        cube.translation = np.array([
+            np.random.uniform(-3, 3),
+            np.random.uniform(-3, 3),
+            np.random.uniform(-8, -3)
+        ], dtype=np.float64)
+        
+        # Escala aleatória
+        scale = np.random.uniform(0.5, 1.5)
+        cube.scale = np.array([scale, scale, scale], dtype=np.float64)
+        
+        # Configurar mesh e material
+        cube.render_data["mesh"] = urenderer.geometry.mesh.get_mesh_cube()
+        cube.render_data["material"] = material
+        
+        # Adicionar callback de atualização
+        cube.callbacks.append(update_cube)
+        
+        runtime.scene.add_child(cube)
     #########################################################################
 
     runtime.loop(n=4000, capture=np.arange(0, 4000, 40, dtype=np.int32))

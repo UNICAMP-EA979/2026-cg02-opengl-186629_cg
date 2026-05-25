@@ -85,7 +85,11 @@ class Mesh:
         '''
         ## SEU CÓDIGO AQUI ######################################################
         # Faça bind do VAO e EBO e envie os dados do EBO
-
+        # Raciocínio: O EBO armazena os índices que definem quais vértices formam
+        # cada triângulo. Primeiro vinculamos o VAO, depois o EBO, e enviamos os dados.
+        GL.glBindVertexArray(self._vao)
+        GL.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, self._ebo)
+        GL.glBufferData(GL.GL_ELEMENT_ARRAY_BUFFER, self._index.nbytes, self._index, GL.GL_STATIC_DRAW)
         #########################################################################
 
     def _update_vbo(self):
@@ -111,7 +115,10 @@ class Mesh:
 
         ## SEU CÓDIGO AQUI ######################################################
         # Bind the VAO and VBO
-
+        # Raciocínio: Vinculamos o VAO para capturar a configuração dos atributos.
+        # Depois vinculamos o VBO para armazenar os dados dos vértices.
+        GL.glBindVertexArray(self._vao)
+        GL.glBindBuffer(GL.GL_ARRAY_BUFFER, self._vbo)
         #########################################################################
 
         check_type_dict = {"vertex": self._vertex,
@@ -138,14 +145,38 @@ class Mesh:
 
         ## SEU CÓDIGO AQUI ######################################################
         # Envia os dados para o buffer
+        # Raciocínio: glBufferData aloca memória no GPU e copia os dados. GL_STATIC_DRAW
+        # indica que os dados não serão modificados frequentemente.
+        GL.glBufferData(GL.GL_ARRAY_BUFFER, data.nbytes, data, GL.GL_STATIC_DRAW)
 
         # Configura os atributos do buffer
+        # Raciocínio: Definimos o layout dos dados para cada atributo.
+        # float_size = 4 bytes para cada float32.
+        # stride = tamanho de um vértice completo em bytes
+        # offset = onde o atributo começa dentro de cada vértice
+        float_size = np.dtype(np.float32).itemsize
+        stride = n_item * float_size
+        
+        # Location 0: position (3 floats)
+        GL.glVertexAttribPointer(0, 3, GL.GL_FLOAT, GL.GL_FALSE, stride, c_void_p(0))
+        GL.glEnableVertexAttribArray(0)
+        
+        # Location 1: uv (2 floats)
+        GL.glVertexAttribPointer(1, 2, GL.GL_FLOAT, GL.GL_FALSE, stride, c_void_p(3 * float_size))
+        GL.glEnableVertexAttribArray(1)
 
         if self._color is not None:
-            ...
+            # Location 2: color (3 floats)
+            GL.glVertexAttribPointer(2, 3, GL.GL_FLOAT, GL.GL_FALSE, stride, c_void_p((3 + 2) * float_size))
+            GL.glEnableVertexAttribArray(2)
 
         if self._normal is not None:
-            ...
+            # Location 3: normal (3 floats)
+            offset = (3 + 2) * float_size
+            if self._color is not None:
+                offset += 3 * float_size
+            GL.glVertexAttribPointer(3, 3, GL.GL_FLOAT, GL.GL_FALSE, stride, c_void_p(offset))
+            GL.glEnableVertexAttribArray(3)
 
         #########################################################################
 
@@ -158,7 +189,10 @@ class Mesh:
         '''
         ## SEU CÓDIGO AQUI ######################################################
         # Realiza o bind do VAO ao contexto e desenha a geometria contida nele
-
+        # Raciocínio: glBindVertexArray ativa o VAO com toda sua configuração de atributos.
+        # glDrawElements renderiza os vértices conforme os índices armazenados no EBO.
+        GL.glBindVertexArray(self._vao)
+        GL.glDrawElements(GL.GL_TRIANGLES, self._n_element, GL.GL_UNSIGNED_INT, None)
         #########################################################################
 
     @property
